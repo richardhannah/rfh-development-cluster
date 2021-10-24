@@ -1,13 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 metadata:
-  name: base-nginx
+  name: base-gitea
 
 commonLabels:
-  app: nginx
+  app: gitea
 
 resources:
-  - deployments/ngnix.yaml
+  - deployments/gitea.yaml
   - resources/namespace.yaml
   - resources/service.yaml
   - resources/ingress.yaml
