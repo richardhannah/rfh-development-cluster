@@ -13,8 +13,70 @@ spec:
       labels:
         app: jenkins
     spec:
+      securityContext:
+        fsGroup: 1000 
+        runAsUser: 0
       containers:
       - name: jenkins
         image: jenkins/jenkins:lts-jdk11
+        command: ["/bin/sh","-c","/usr/local/bin/install-plugins.sh < /plugins/jenkins-plugins.txt && /usr/local/bin/jenkins.sh"]      
+        env:
+        - name: JENKINS_HOME
+          value: /var/jenkins_home
+        - name: JAVA_OPTS
+          value: "-Djenkins.install.runSetupWizard=false"
+        - name: JENKINS_OPTS
+          value: "--argumentsRealm.roles.user=admin --argumentsRealm.passwd.admin=admin --argumentsRealm.roles.admin=admin"        
         ports:
         - containerPort: 8080
+        volumeMounts:
+          - name: jenkins-home
+            mountPath: /var/jenkins_home
+          - name: jenkins-plugins-vol
+            mountPath: /plugins/jenkins-plugins.txt
+            subPath: jenkins-plugins.txt   
+      volumes:
+        - name: jenkins-home
+          persistentVolumeClaim:
+            claimName: jenkins-pv-claim
+        - name: jenkins-plugins-vol
+          configMap: 
+            name: jenkins-plugins-cm
+            items: 
+              - key: jenkins-plugins.txt
+                path: jenkins-plugins.txt
+# /usr/local/bin/jenkins.sh install-plugins.sh
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins-pv
+  namespace: jenkins
+spec:
+  storageClassName: manual
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 20Gi
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /var/jenkins_home
+
+
+

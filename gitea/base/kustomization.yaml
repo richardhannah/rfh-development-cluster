@@ -8,6 +8,8 @@ commonLabels:
 
 resources:
   - deployments/gitea.yaml
+  - deployments/mysql.yaml
+  - deployments/sshServer.yaml
   - resources/namespace.yaml
   - resources/service.yaml
   - resources/ingress.yaml

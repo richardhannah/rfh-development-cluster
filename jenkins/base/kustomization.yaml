@@ -10,3 +10,12 @@ resources:
   - deployments/jenkins.yaml
   - resources/namespace.yaml
   - resources/service.yaml
+  - resources/ingress.yaml
+
+
+configMapGenerator:
+  - name: jenkins-plugins-cm
+    behavior: create
+    namespace: jenkins
+    files: 
+      - jenkins-plugins.txt
