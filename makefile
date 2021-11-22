@@ -2,7 +2,7 @@
 
 .PHONY: default-namespace
 default-namespace:
-	kubectl config set-context --current --namespace=jenkins
+	kubectl config set-context --current --namespace=nginx
 
 .PHONY: echo
 echo:
